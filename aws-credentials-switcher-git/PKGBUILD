@@ -1,0 +1,27 @@
+_pkgname=aws-credentials-switcher
+pkgname="${_pkgname}-git"
+pkgver=1.5.5.32.g0a85850
+pkgrel=1
+pkgdesc='Switch aws credential files'
+arch=('x86_64')
+url=https://github.com/gplassard/aws-credentials-switcher
+license=('custom')
+makedepends=('git' 'rust')
+source=("${_pkgname}::git+https://github.com/gplassard/${_pkgname}.git")
+conflicts=("${_pkgname}" "${_pkgname}-bin")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "${_pkgname}"
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "$_pkgname"
+  cargo build --release --locked
+}
+
+package() {
+  cd "$_pkgname"
+  install -Dt "$pkgdir"/usr/bin target/release/$_pkgname
+}
