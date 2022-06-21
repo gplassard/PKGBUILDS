@@ -1,0 +1,27 @@
+_pkgname=pretty-logs
+pkgname="${_pkgname}-git"
+pkgver=1
+pkgrel=1
+pkgdesc='Clean AWS Lambda NodeJS logs'
+arch=('x86_64')
+url=https://github.com/gplassard/pretty-logs
+license=('custom')
+makedepends=('git' 'rust')
+source=("${_pkgname}::git+https://github.com/gplassard/${_pkgname}.git")
+conflicts=("${_pkgname}" "${_pkgname}-bin")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "${_pkgname}"
+    printf "$(grep '^version =' Cargo.toml|head -n1|cut -d\" -f2|cut -d\- -f1).$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "$_pkgname"
+  cargo build --release --locked
+}
+
+package() {
+  cd "$_pkgname"
+  install -Dt "$pkgdir"/usr/bin target/release/$_pkgname
+}
